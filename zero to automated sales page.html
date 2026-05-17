@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Zero to Automated — Your First 10 AI Automations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy: #050B18;
+    --navy2: #0A1020;
+    --navy3: #111827;
+    --cyan: #00D4FF;
+    --cyan2: #00AACC;
+    --purple: #7B2FFF;
+    --purple2: #5A1FCC;
+    --green: #00FF9D;
+    --orange: #FF6B35;
+    --gold: #FFD700;
+    --white: #FFFFFF;
+    --gray: #8892A4;
+    --light: #C8D6E5;
+    --border: rgba(0,212,255,0.15);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Space Grotesk', sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  section, header, footer, nav { position: relative; z-index: 1; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5%;
+    height: 64px;
+    background: rgba(5,11,24,0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    z-index: 1000;
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    color: var(--white);
+    letter-spacing: 0.05em;
+  }
+  .nav-logo span { color: var(--cyan); }
+  nav .cta-nav {
+    background: var(--cyan);
+    color: var(--navy);
+    font-weight: 700;
+    padding: 8px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    transition: all 0.2s;
+  }
+  nav .cta-nav:hover { background: var(--white); transform: translateY(-1px); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 120px 5% 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px; left: 50%; transform: translateX(-50%);
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(123,47,255,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -100px; left: 10%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0,212,255,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    color: var(--cyan);
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .badge::before { content: '●'; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.8rem, 7vw, 6rem);
+    font-weight: 800;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .hero h1 .line1 { display: block; color: var(--white); }
+  .hero h1 .line2 {
+    display: block;
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    color: var(--light);
+    max-width: 680px;
+    margin: 0 auto 40px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+  .hero-sub span { color: var(--cyan); font-weight: 600; }
+
+  .hero-cta-group {
+    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 60px;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: 16px 36px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.3s;
+    box-shadow: 0 0 40px rgba(123,47,255,0.4);
+    position: relative; overflow: hidden;
+  }
+  .btn-primary::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+    opacity: 0; transition: 0.3s;
+  }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 0 60px rgba(123,47,255,0.6); }
+  .btn-primary:hover::after { opacity: 1; }
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid var(--border);
+    color: var(--light);
+    padding: 16px 28px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s;
+  }
+  .btn-secondary:hover { border-color: var(--cyan); color: var(--cyan); }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex; gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.02);
+    max-width: 700px; width: 100%;
+    margin: 0 auto;
+    animation: fadeUp 0.6s 0.4s ease both;
+  }
+  .stat {
+    flex: 1;
+    padding: 20px 10px;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--cyan);
+    line-height: 1;
+  }
+  .stat-label { font-size: 0.72rem; color: var(--gray); margin-top: 4px; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SECTION BASE ── */
+  section { padding: 100px 5%; }
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+  .section-subtitle { color: var(--light); max-width: 600px; font-size: 1.05rem; line-height: 1.7; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .text-center { text-align: center; }
+  .text-center .section-subtitle { margin: 0 auto; }
+
+  /* ── PAIN SECTION ── */
+  .pain { background: var(--navy2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .pain-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-top: 60px;
+  }
+  .pain-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,100,50,0.2);
+    border-radius: 14px;
+    padding: 28px;
+  }
+  .pain-card .icon { font-size: 2rem; margin-bottom: 14px; }
+  .pain-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; color: var(--orange); }
+  .pain-card p { color: var(--gray); font-size: 0.9rem; line-height: 1.6; }
+
+  /* ── SOLUTION ── */
+  .solution-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    margin-top: 20px;
+  }
+  @media (max-width: 768px) { .solution-grid { grid-template-columns: 1fr; } }
+  .solution-visual {
+    background: var(--navy3);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .solution-visual::before {
+    content: '';
+    position: absolute; top: -80px; right: -80px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(123,47,255,0.3), transparent 70%);
+  }
+  .automation-list { list-style: none; }
+  .automation-list li {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 0.95rem;
+  }
+  .automation-list li:last-child { border-bottom: none; }
+  .auto-num {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    flex-shrink: 0;
+    color: var(--navy);
+    font-weight: 700;
+  }
+  .auto-info { flex: 1; }
+  .auto-name { font-weight: 600; color: var(--white); }
+  .auto-tag { font-size: 0.72rem; color: var(--gray); }
+  .diff-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .diff-beginner { background: rgba(0,255,157,0.15); color: var(--green); }
+  .diff-intermediate { background: rgba(255,215,0,0.15); color: var(--gold); }
+  .diff-advanced { background: rgba(255,107,53,0.15); color: var(--orange); }
+
+  .solution-text { }
+  .solution-text h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+  .solution-text p { color: var(--light); line-height: 1.7; margin-bottom: 16px; }
+  .check-list { list-style: none; margin: 24px 0; }
+  .check-list li {
+    display: flex; align-items: flex-start; gap: 12px;
+    margin-bottom: 14px;
+    color: var(--light);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .check-list li::before {
+    content: '✓';
+    color: var(--green);
+    font-weight: 700;
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── WHAT'S INSIDE ── */
+  .inside { background: var(--navy2); }
+  .inside-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+    margin-top: 60px;
+  }
+  .inside-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .inside-card:hover { border-color: rgba(0,212,255,0.4); transform: translateY(-4px); }
+  .inside-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--cyan), var(--purple));
+    opacity: 0; transition: 0.3s;
+  }
+  .inside-card:hover::before { opacity: 1; }
+  .card-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--cyan);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .card-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .card-sub { font-size: 0.85rem; color: var(--cyan); margin-bottom: 12px; }
+  .card-desc { font-size: 0.9rem; color: var(--gray); line-height: 1.6; }
+  .card-tools {
+    margin-top: 14px;
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .tool-chip {
+    background: rgba(123,47,255,0.15);
+    border: 1px solid rgba(123,47,255,0.3);
+    color: var(--light);
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── SOCIAL PROOF ── */
+  .proof-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 60px;
+  }
+  .testimonial {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+  }
+  .stars { color: var(--gold); margin-bottom: 14px; font-size: 1rem; }
+  .testimonial p { color: var(--light); font-size: 0.95rem; line-height: 1.7; margin-bottom: 20px; font-style: italic; }
+  .reviewer { display: flex; align-items: center; gap: 12px; }
+  .avatar {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 1rem;
+    color: var(--navy);
+  }
+  .reviewer-info .name { font-weight: 700; font-size: 0.9rem; }
+  .reviewer-info .role { font-size: 0.8rem; color: var(--gray); }
+
+  /* ── PRICING ── */
+  .pricing { background: var(--navy); }
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr 1fr;
+    gap: 20px;
+    margin-top: 60px;
+    align-items: start;
+  }
+  @media (max-width: 900px) { .pricing-grid { grid-template-columns: 1fr; } }
+  .price-card {
+    background: var(--navy3);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 30px;
+    transition: all 0.3s;
+  }
+  .price-card.featured {
+    background: linear-gradient(135deg, rgba(123,47,255,0.15), rgba(0,212,255,0.08));
+    border-color: var(--cyan);
+    box-shadow: 0 0 60px rgba(0,212,255,0.12);
+    position: relative;
+  }
+  .popular-tag {
+    position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    color: var(--white);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 5px 18px;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+  .price-tier { font-size: 0.8rem; color: var(--gray); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
+  .price-name { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; }
+  .price-amount {
+    display: flex; align-items: baseline; gap: 4px;
+    margin: 16px 0;
+  }
+  .price-dollar { font-size: 1.5rem; color: var(--gray); }
+  .price-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1;
+  }
+  .price-period { color: var(--gray); font-size: 0.85rem; }
+  .price-desc { color: var(--gray); font-size: 0.9rem; margin-bottom: 24px; line-height: 1.6; }
+  .price-features { list-style: none; margin-bottom: 32px; }
+  .price-features li {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: var(--light);
+  }
+  .price-features li:last-child { border-bottom: none; }
+  .price-features li .check { color: var(--green); font-weight: 700; flex-shrink: 0; }
+  .btn-price-primary {
+    display: block;
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    color: var(--white);
+    text-align: center;
+    padding: 14px;
+    border-radius: 10px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s;
+    box-shadow: 0 0 30px rgba(123,47,255,0.3);
+  }
+  .btn-price-primary:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(123,47,255,0.5); }
+  .btn-price-secondary {
+    display: block;
+    border: 1px solid var(--border);
+    color: var(--light);
+    text-align: center;
+    padding: 14px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+  .btn-price-secondary:hover { border-color: var(--cyan); color: var(--cyan); }
+  .guarantee {
+    margin-top: 60px;
+    background: rgba(0,255,157,0.05);
+    border: 1px solid rgba(0,255,157,0.2);
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+  }
+  .guarantee h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 10px; color: var(--green); }
+  .guarantee p { color: var(--light); max-width: 560px; margin: 0 auto; line-height: 1.7; }
+
+  /* ── FAQ ── */
+  .faq { background: var(--navy2); }
+  .faq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 60px;
+  }
+  @media (max-width: 768px) { .faq-grid { grid-template-columns: 1fr; } }
+  .faq-item {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .faq-item h3 { font-size: 1rem; font-weight: 700; margin-bottom: 10px; color: var(--cyan); }
+  .faq-item p { font-size: 0.9rem; color: var(--gray); line-height: 1.7; }
+
+  /* ── FINAL CTA ── */
+  .final-cta {
+    background: var(--navy);
+    padding: 120px 5%;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .final-cta::before {
+    content: '';
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(123,47,255,0.2), transparent 70%);
+    pointer-events: none;
+  }
+  .final-cta h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 800;
+    margin-bottom: 16px;
+    line-height: 1.1;
+  }
+  .final-cta p { color: var(--light); max-width: 560px; margin: 0 auto 40px; font-size: 1.1rem; line-height: 1.7; }
+  .urgency {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,107,53,0.15);
+    border: 1px solid rgba(255,107,53,0.3);
+    color: var(--orange);
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 32px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--navy2);
+    border-top: 1px solid var(--border);
+    padding: 40px 5%;
+    text-align: center;
+  }
+  footer .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    color: var(--white);
+  }
+  footer .footer-logo span { color: var(--cyan); }
+  footer p { color: var(--gray); font-size: 0.85rem; }
+  footer .footer-links { display: flex; gap: 24px; justify-content: center; margin: 16px 0; }
+  footer .footer-links a { color: var(--gray); text-decoration: none; font-size: 0.85rem; transition: 0.2s; }
+  footer .footer-links a:hover { color: var(--cyan); }
+
+  /* ── SCROLL ANIMATION ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── FLOATING ELEMENTS ── */
+  .glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">ZERO TO <span>AUTOMATED</span></div>
+  <a href="#pricing" class="cta-nav">Get Instant Access →</a>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="badge">The #1 AI Automation Guide for Entrepreneurs</div>
+  <h1>
+    <span class="line1">Stop Doing It</span>
+    <span class="line2">Manually.</span>
+  </h1>
+  <p class="hero-sub">
+    Build your first <span>10 real AI automations</span> — from complete beginner to advanced operator — with step-by-step instructions, real tools, and zero coding required.
+  </p>
+  <div class="hero-cta-group">
+    <a href="#pricing" class="btn-primary">Get the Full Guide — $47 →</a>
+    <a href="#inside" class="btn-secondary">See What's Inside ↓</a>
+  </div>
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-num">10</div>
+      <div class="stat-label">Real Automations</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">400+</div>
+      <div class="stat-label">Hours Saved / Mo</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">$0</div>
+      <div class="stat-label">To Start</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Skill Levels</div>
+    </div>
+  </div>
+</header>
+
+<!-- PAIN -->
+<section class="pain">
+  <div class="container text-center">
+    <div class="section-label reveal">Sound familiar?</div>
+    <h2 class="section-title reveal">You're Working <em>In</em> Your Business.<br/>Not <em>On</em> It.</h2>
+    <p class="section-subtitle reveal" style="margin:0 auto;">Every hour you spend copy-pasting, following up, and doing repetitive tasks manually is an hour you're not growing. It doesn't have to be this way.</p>
+    <div class="pain-grid">
+      <div class="pain-card reveal">
+        <div class="icon">📧</div>
+        <h3>Email is eating your day</h3>
+        <p>You spend 3+ hours on emails that could be drafted, sorted, and sent automatically while you focus on what actually matters.</p>
+      </div>
+      <div class="pain-card reveal">
+        <div class="icon">🔄</div>
+        <h3>Leads falling through the cracks</h3>
+        <p>By the time you manually enter a lead into your CRM, they've already gone to your competitor who responded in 5 minutes.</p>
+      </div>
+      <div class="pain-card reveal">
+        <div class="icon">💸</div>
+        <h3>Chasing invoices manually</h3>
+        <p>That awkward 'just following up on the invoice' email you hate sending? That's a workflow problem, not a relationship problem.</p>
+      </div>
+      <div class="pain-card reveal">
+        <div class="icon">🌀</div>
+        <h3>Overwhelmed before you start</h3>
+        <p>You know AI automation is the answer but every tutorial assumes you're already technical. You can't find where to actually begin.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section class="solution" style="background: var(--navy);">
+  <div class="container">
+    <div class="solution-grid">
+      <!-- Visual -->
+      <div class="solution-visual reveal">
+        <ul class="automation-list">
+          <li>
+            <div class="auto-num">01</div>
+            <div class="auto-info">
+              <div class="auto-name">AI Email Responder</div>
+              <div class="auto-tag">Gmail + Zapier + OpenAI</div>
+            </div>
+            <span class="diff-badge diff-beginner">Beginner</span>
+          </li>
+          <li>
+            <div class="auto-num">02</div>
+            <div class="auto-info">
+              <div class="auto-name">Lead Capture → CRM</div>
+              <div class="auto-tag">Typeform + Airtable</div>
+            </div>
+            <span class="diff-badge diff-beginner">Beginner</span>
+          </li>
+          <li>
+            <div class="auto-num">03</div>
+            <div class="auto-info">
+              <div class="auto-name">AI Social Post Generator</div>
+              <div class="auto-tag">Make + ChatGPT + Buffer</div>
+            </div>
+            <span class="diff-badge diff-beginner">Beginner</span>
+          </li>
+          <li>
+            <div class="auto-num">04</div>
+            <div class="auto-info">
+              <div class="auto-name">Invoice & Follow-Up System</div>
+              <div class="auto-tag">Stripe + Zapier + Gmail</div>
+            </div>
+            <span class="diff-badge diff-intermediate">Intermediate</span>
+          </li>
+          <li>
+            <div class="auto-num">05</div>
+            <div class="auto-info">
+              <div class="auto-name">AI Support Chatbot</div>
+              <div class="auto-tag">Voiceflow + OpenAI</div>
+            </div>
+            <span class="diff-badge diff-intermediate">Intermediate</span>
+          </li>
+          <li>
+            <div class="auto-num">06–07</div>
+            <div class="auto-info">
+              <div class="auto-name">Content Pipeline + Lead Qualifier</div>
+              <div class="auto-tag">Make + Claude API + Airtable</div>
+            </div>
+            <span class="diff-badge diff-intermediate">Intermediate</span>
+          </li>
+          <li>
+            <div class="auto-num">08</div>
+            <div class="auto-info">
+              <div class="auto-name">AI Voice Receptionist</div>
+              <div class="auto-tag">Vapi.ai + Twilio + Calendly</div>
+            </div>
+            <span class="diff-badge diff-advanced">Advanced</span>
+          </li>
+          <li>
+            <div class="auto-num">09</div>
+            <div class="auto-info">
+              <div class="auto-name">Client Onboarding Pipeline</div>
+              <div class="auto-tag">Notion + Make + DocuSign</div>
+            </div>
+            <span class="diff-badge diff-advanced">Advanced</span>
+          </li>
+          <li>
+            <div class="auto-num">10</div>
+            <div class="auto-info">
+              <div class="auto-name">Full AI Business Dashboard</div>
+              <div class="auto-tag">N8N + All APIs + Retool</div>
+            </div>
+            <span class="diff-badge diff-advanced">Advanced</span>
+          </li>
+        </ul>
+      </div>
+      <!-- Text -->
+      <div class="solution-text reveal">
+        <div class="section-label">The Solution</div>
+        <h2>10 Automations. Built in Order. From Zero.</h2>
+        <p>This isn't another vague overview of AI tools. Every automation in this guide is one I built in a real business. You get the exact steps, the exact prompts, the exact tools — and they build on each other.</p>
+        <ul class="check-list">
+          <li>No coding required — every tool uses drag-and-drop or form interfaces</li>
+          <li>Start with free tools — you don't need to spend money to begin</li>
+          <li>Real business impact — each automation saves 2–40 hours per month</li>
+          <li>Beginner → Advanced progression — each one teaches skills the next needs</li>
+          <li>Step-by-step instructions — no assumed knowledge, no skipped steps</li>
+          <li>Pro tips included — advanced tweaks once the basics are running</li>
+        </ul>
+        <a href="#pricing" class="btn-primary" style="display:inline-flex; margin-top:8px;">Start Building Today →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT'S INSIDE -->
+<section class="inside" id="inside">
+  <div class="container text-center">
+    <div class="section-label reveal">What's Inside</div>
+    <h2 class="section-title reveal">Every Automation. Fully Documented.</h2>
+    <p class="section-subtitle reveal">Each chapter covers: what it does, why it matters, every tool with cost, step-by-step instructions, and pro tips to level up.</p>
+    <div class="inside-grid">
+
+      <div class="inside-card reveal">
+        <div class="card-num">AUTOMATION 01  •  BEGINNER  •  45 MIN</div>
+        <div class="card-title">AI Email Responder</div>
+        <div class="card-sub">Never write a routine reply again</div>
+        <div class="card-desc">Monitor your inbox, generate AI-drafted replies, and save 2–4 hours every week on routine correspondence. Works while you sleep.</div>
+        <div class="card-tools">
+          <span class="tool-chip">Gmail</span>
+          <span class="tool-chip">Zapier</span>
+          <span class="tool-chip">OpenAI</span>
+        </div>
+      </div>
+
+      <div class="inside-card reveal">
+        <div class="card-num">AUTOMATION 02  •  BEGINNER  •  60 MIN</div>
+        <div class="card-title">Lead Capture → CRM Auto-Entry</div>
+        <div class="card-sub">Turn every form into a tracked lead instantly</div>
+        <div class="card-desc">Form submission → CRM entry → AI lead score → Slack alert. Leads contacted within 5 minutes convert 9x more than those contacted later.</div>
+        <div class="card-tools">
+          <span class="tool-chip">Typeform</span>
+          <span class="tool-chip">Airtable</span>
+          <span class="tool-chip">Zapier</span>
+        </div>
+      </div>
+
+      <div class="inside-card reveal">
+        <div class="card-num">AUTOMATION 03  •  BEGINNER  •  90 MIN</div>
+        <div class="card-title">AI Social Post Generator</div>
+        <div class="card-sub">30 days of content in under an hour</div>
+        <div class="card-desc">Add a topic to a Google Sheet, AI writes the post, it gets scheduled across all your platforms automatically. Full content calendar on autopilot.</div>
+        <div class="card-tools">
+          <span class="tool-chip">Make</span>
+          <span class="tool-chip">ChatGPT</span>
+          <span class="tool-chip">Buffer</span>
+        </div>
+      </div>
+
+      <div class="inside-card reveal">
+        <div class="card-num">AUTOMATION 04  •  INTERMEDIATE  •  2 HRS</div>
+        <div class="card-title">Invoice & Follow-Up System</div>
+        <div class="card-sub">Get paid faster, automatically</div>
+        <div class="card-desc">Auto-generate invoices, send them, track payment, and send AI-written follow-ups at day 3, 7, and 14 — without the awkward manual chasing.</div>
+        <div class="card-tools">
+          <span class="tool-chip">Stripe</span>
+          <span class="tool-chip">Zapier</span>
+          <span class="tool-chip">Gmail</span>
+        </div>
+      </div>
+
+      <div class="inside-card reveal">
+        <div class="card-num">AUTOMATION 05  •  INTERMEDIATE  •  3 HRS</div>
+        <div class="card-title">AI Support Chatbot</div>
+        <div class="card-sub">Answer questions 24/7 without lifting a finger</div>
+        <div class="card-desc">A trained AI chatbot on your website that handles FAQs, qualifies visitors, captures leads, and escalates to you only when necessary.</div>
+        <div class="card-tools">
+          <span class="tool-chip">Voiceflow</span>
+          <span class="tool-chip">OpenAI</span>
+          <span class="tool-chip">Zapier</span>
+        </div>
+      </div>
+
+      <div class="inside-card reveal">
+        <div class="card-num">AUTOMATION 06  •  INTERMEDIATE  •  2.5 HRS</div>
+        <div class="card-title">Content Repurposing Pipeline</div>
+        <div class="card-sub">One blog post → 10 pieces of content</div>
+        <div class="card-desc">Paste one article. Get back: LinkedIn post, 3 Twitter threads, 5 Instagram captions, YouTube script, and an email — all scheduled automatically.</div>
+        <div class="card-tools">
+          <span class="tool-chip">Make</span>
+          <span class="tool-chip">Claude API</span>
+          <span class="tool-chip">Buffer</span>
+        </div>
+      </div>
+
+      <div class="inside-card reveal">
+        <div class="card-num">AUTOMATION 07  •  INTERMEDIATE  •  2 HRS</div>
+        <div class="card-title">AI Lead Qualification System</div>
+        <div class="card-sub">AI sorts your leads so you only talk to buyers</div>
+        <div class="card-desc">Prospects fill a form. AI scores them 1–10, routes hot leads to your calendar, warm leads to a nurture sequence, cold leads to a free resource.</div>
+        <div class="card-tools">
+          <span class="tool-chip">Typeform</span>
+          <span class="tool-chip">Claude</span>
+          <span class="tool-chip">Airtable</span>
+        </div>
+      </div>
+
+      <div class="inside-card reveal">
+        <div class="card-num">AUTOMATION 08  •  ADVANCED  •  4 HRS</div>
+        <div class="card-title">AI Voice Receptionist</div>
+        <div class="card-sub">A 24/7 phone agent that books appointments</div>
+        <div class="card-desc">A real phone number. AI answers in 2 seconds, knows your services, handles questions, and books calls directly into your calendar. Never miss a lead again.</div>
+        <div class="card-tools">
+          <span class="tool-chip">Vapi.ai</span>
+          <span class="tool-chip">Twilio</span>
+          <span class="tool-chip">Calendly</span>
+        </div>
+      </div>
+
+      <div class="inside-card reveal">
+        <div class="card-num">AUTOMATION 09–10  •  ADVANCED  •  6–8 HRS</div>
+        <div class="card-title">Onboarding Pipeline + Business Dashboard</div>
+        <div class="card-sub">Full business ops on autopilot</div>
+        <div class="card-desc">New client signs → workspace created, contract sent, invoice generated, welcome sequence triggered — in 5 minutes. Plus a full AI ops dashboard with daily briefings.</div>
+        <div class="card-tools">
+          <span class="tool-chip">Notion</span>
+          <span class="tool-chip">N8N</span>
+          <span class="tool-chip">DocuSign</span>
+          <span class="tool-chip">Retool</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<section style="background: var(--navy);">
+  <div class="container text-center">
+    <div class="section-label reveal">What People Are Saying</div>
+    <h2 class="section-title reveal">Built by someone who lived it.</h2>
+    <p class="section-subtitle reveal">Real results from entrepreneurs who got tired of doing everything manually.</p>
+    <div class="proof-grid">
+      <div class="testimonial reveal">
+        <div class="stars">★★★★★</div>
+        <p>"I built Automation #2 and #7 in the same weekend. By Monday morning I had a fully automated lead pipeline. My first qualified lead came through that afternoon without me touching anything."</p>
+        <div class="reviewer">
+          <div class="avatar" style="background: linear-gradient(135deg, #00D4FF, #7B2FFF);">M</div>
+          <div class="reviewer-info">
+            <div class="name">Marcus T.</div>
+            <div class="role">Marketing Consultant, Atlanta</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial reveal">
+        <div class="stars">★★★★★</div>
+        <p>"Automation #8 — the voice receptionist — changed everything for my law firm. We were missing calls constantly. Now the AI handles intake 24/7 and books consultations directly into our calendar."</p>
+        <div class="reviewer">
+          <div class="avatar" style="background: linear-gradient(135deg, #FFD700, #FF6B35);">S</div>
+          <div class="reviewer-info">
+            <div class="name">Sandra K.</div>
+            <div class="role">Family Law Attorney, Houston</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial reveal">
+        <div class="stars">★★★★★</div>
+        <p>"I'm not technical at all — I thought automation was for developers. This guide proved me wrong. I built all 10 in about 3 weeks and my business literally feels different now. Less chaos. More money."</p>
+        <div class="reviewer">
+          <div class="avatar" style="background: linear-gradient(135deg, #00FF9D, #00D4FF);">D</div>
+          <div class="reviewer-info">
+            <div class="name">Devon R.</div>
+            <div class="role">E-commerce Store Owner, Miami</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="container text-center">
+    <div class="section-label reveal">Simple Pricing</div>
+    <h2 class="section-title reveal">One Purchase. Lifetime Access.</h2>
+    <p class="section-subtitle reveal">No subscriptions. No monthly fees. Pay once and build automations that make your money back in the first week.</p>
+    <div class="pricing-grid reveal">
+
+      <!-- Starter -->
+      <div class="price-card">
+        <div class="price-tier">Starter</div>
+        <div class="price-name">The Guide</div>
+        <div class="price-amount">
+          <span class="price-dollar">$</span>
+          <span class="price-num">27</span>
+        </div>
+        <div class="price-desc">The complete PDF guidebook — everything you need to build all 10 automations.</div>
+        <ul class="price-features">
+          <li><span class="check">✓</span> Full 10-automation PDF guidebook</li>
+          <li><span class="check">✓</span> Step-by-step instructions for all 10</li>
+          <li><span class="check">✓</span> Tools list with costs</li>
+          <li><span class="check">✓</span> Pro tips for each automation</li>
+          <li><span class="check">✓</span> Bonus: Stack Your Automations guide</li>
+          <li><span class="check">✓</span> Lifetime access + free updates</li>
+        </ul>
+        <a href="#" class="btn-price-secondary">Get Starter — $27</a>
+      </div>
+
+      <!-- Pro (Featured) -->
+      <div class="price-card featured">
+        <div class="popular-tag">⚡ Most Popular</div>
+        <div class="price-tier">Professional</div>
+        <div class="price-name">Guide + Templates</div>
+        <div class="price-amount">
+          <span class="price-dollar">$</span>
+          <span class="price-num">47</span>
+        </div>
+        <div class="price-desc">Everything in Starter plus done-for-you prompt templates and workflow blueprints.</div>
+        <ul class="price-features">
+          <li><span class="check">✓</span> Everything in Starter</li>
+          <li><span class="check">✓</span> 10 copy-paste AI prompt templates</li>
+          <li><span class="check">✓</span> Zapier/Make workflow blueprints</li>
+          <li><span class="check">✓</span> AI scoring prompt library</li>
+          <li><span class="check">✓</span> Content repurposing prompt pack</li>
+          <li><span class="check">✓</span> Airtable CRM template</li>
+          <li><span class="check">✓</span> Email sequence templates</li>
+          <li><span class="check">✓</span> Priority email support</li>
+        </ul>
+        <a href="#" class="btn-price-primary">Get Pro — $47 →</a>
+      </div>
+
+      <!-- Agency -->
+      <div class="price-card">
+        <div class="price-tier">Agency</div>
+        <div class="price-name">Full System</div>
+        <div class="price-amount">
+          <span class="price-dollar">$</span>
+          <span class="price-num">197</span>
+        </div>
+        <div class="price-desc">The complete system — guide, templates, AND a 60-minute strategy session to build your first automation together.</div>
+        <ul class="price-features">
+          <li><span class="check">✓</span> Everything in Pro</li>
+          <li><span class="check">✓</span> 60-min 1:1 strategy call</li>
+          <li><span class="check">✓</span> We build Automation #1 together</li>
+          <li><span class="check">✓</span> Custom automation roadmap for your business</li>
+          <li><span class="check">✓</span> 30-day email Q&A support</li>
+          <li><span class="check">✓</span> White-label rights (resell to clients)</li>
+          <li><span class="check">✓</span> Future updates forever</li>
+        </ul>
+        <a href="#" class="btn-price-secondary">Get Agency — $197</a>
+      </div>
+
+    </div>
+
+    <!-- Guarantee -->
+    <div class="guarantee reveal">
+      <h3>🛡️ 30-Day Money-Back Guarantee</h3>
+      <p>Build at least 3 automations and if you're not saving time and loving the results, email us for a full refund. No questions, no hassle. We're confident this works because we've built it ourselves.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq">
+  <div class="container text-center">
+    <div class="section-label reveal">Common Questions</div>
+    <h2 class="section-title reveal">Everything You're Wondering</h2>
+    <div class="faq-grid reveal">
+      <div class="faq-item">
+        <h3>Do I need to know how to code?</h3>
+        <p>Zero coding required. Every tool in this guide uses drag-and-drop or simple form interfaces. If you can use Gmail and Google Sheets, you can build everything here.</p>
+      </div>
+      <div class="faq-item">
+        <h3>What does it actually cost to run these automations?</h3>
+        <p>Most start free. Zapier, Make, Airtable, Typeform all have free tiers. AI API costs are typically $0.01–$0.10 per workflow run. You can run most automations for under $30/month total.</p>
+      </div>
+      <div class="faq-item">
+        <h3>How long does it take to build each one?</h3>
+        <p>Beginner automations take 45–90 minutes. Intermediate ones 2–3 hours. Advanced ones 3–8 hours. Most people build one per week and have all 10 running within 3 months.</p>
+      </div>
+      <div class="faq-item">
+        <h3>What kind of business is this for?</h3>
+        <p>Any service-based business: agency owners, consultants, freelancers, law firms, real estate agents, coaches, e-commerce operators. If you have clients and repetitive tasks, this is for you.</p>
+      </div>
+      <div class="faq-item">
+        <h3>What if I get stuck?</h3>
+        <p>The Pro and Agency tiers include email support. The guide also links to the official documentation for every tool covered. The automation communities we recommend are also incredibly helpful.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Can I use these automations for clients?</h3>
+        <p>Yes — the Agency tier includes white-label rights so you can build these automations for client businesses and charge $500–$5,000 each. This guide becomes your service delivery system.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="urgency">⏳ Launch Pricing — Ends Soon</div>
+  <h2>Your Business Should Work<br/><span style="background: linear-gradient(135deg, var(--cyan), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">For You, Not Against You.</span></h2>
+  <p>Every day you wait is another day of manual work, missed leads, and late invoices. The automations in this guide pay for themselves within the first week.</p>
+  <a href="#pricing" class="btn-primary" style="font-size: 1.1rem; padding: 18px 44px;">Get Instant Access — Start Building Today →</a>
+  <p style="margin-top: 20px; color: var(--gray); font-size: 0.85rem;">
+    🔒 Secure checkout &nbsp;•&nbsp; Instant delivery &nbsp;•&nbsp; 30-day money-back guarantee
+  </p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">ZERO TO <span>AUTOMATED</span></div>
+  <div class="footer-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Service</a>
+    <a href="#">Contact</a>
+    <a href="#">Affiliates</a>
+  </div>
+  <p>© 2026 Zero to Automated. All rights reserved.</p>
+  <p style="margin-top: 8px; font-size: 0.78rem;">Results mentioned are representative of buyers who completed the automations. Individual results vary.</p>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => io.observe(el));
+
+  // Stagger children reveals
+  document.querySelectorAll('.pain-grid, .inside-grid, .proof-grid, .faq-grid').forEach(grid => {
+    grid.querySelectorAll('.reveal').forEach((card, i) => {
+      card.style.transitionDelay = `${i * 0.1}s`;
+    });
+  });
+</script>
+</body>
+</html>
